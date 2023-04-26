@@ -2148,7 +2148,7 @@ Suffix3D: imm8        is imm8 [ suffix3D=imm8; ] { }
 :CALL rm16      is $(LONGMODE_OFF) & vexMode=0 & addrsize=1 & opsize=0 & byte=0xff; rm16 & reg_opcode=2 ...   { local dest:2 = rm16; push42(&:2 inst_next); call [dest]; }
 @ifdef IA64
 # Ghidra Adonis Processor start
-:CALL rm16      is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & opsize=0 & byte=0xff; rm16 & reg_opcode=2 ...   { local dest:8 = inst_next + zext(rm16); push48(&:4 inst_next); call [dest]; }
+:CALL rm16      is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & opsize=0 & byte=0xff; rm16 & reg_opcode=2 ...   { local dest:4 = inst_next + zext(rm16); push48(&:4 inst_next); call [dest]; }
 # Ghidra Adonis Processor end
 @endif
 
@@ -2156,7 +2156,7 @@ Suffix3D: imm8        is imm8 [ suffix3D=imm8; ] { }
 :CALL rm32      is $(LONGMODE_OFF) & vexMode=0 & addrsize=1 & opsize=1 & byte=0xff; rm32 & reg_opcode=2 ...   { local dest:4 = rm32; push44(&:4 inst_next); call [dest]; }
 @ifdef IA64
 # Ghidra Adonis Processor start
-:CALL rm64      is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & (opsize=1 | opsize=2) & byte=0xff; rm64 & reg_opcode=2 ...   { local dest:8 = rm64; push48(&:4 inst_next); call [dest]; }
+:CALL rm64      is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & (opsize=1 | opsize=2) & byte=0xff; rm64 & reg_opcode=2 ...   { local dest:4 = rm64:4; push48(&:4 inst_next); call [dest]; }
 # Ghidra Adonis Processor end
 @endif
 
@@ -2169,7 +2169,9 @@ Suffix3D: imm8        is imm8 [ suffix3D=imm8; ] { }
                                                                                                   push22(CS); push22(&:2 inst_next); call [addrptr]; }
 :CALLF addr32       is vexMode=0 & addrsize=1 & opsize=0 & byte=0xff; addr32 & reg_opcode=3 ... { local dest:4 = addr32; push42(CS); push42(&:2 inst_next); call [dest]; }
 @ifdef IA64
-:CALLF addr64       is $(LONGMODE_ON) & vexMode=0 & addrsize=2 & opsize=0 & byte=0xff; addr64 & reg_opcode=3 ... { local dest:8 = addr64; push82(CS); push82(&:2 inst_next); call [dest]; }
+# Ghidra Adonis Processor start
+:CALLF addr64       is $(LONGMODE_ON) & vexMode=0 & addrsize=2 & opsize=0 & byte=0xff; addr64 & reg_opcode=3 ... { local dest:4 = addr64:4; push82(CS); push82(&:2 inst_next); call [dest]; }
+# Ghidra Adonis Processor end
 @endif
 
 
@@ -2178,10 +2180,8 @@ Suffix3D: imm8        is imm8 [ suffix3D=imm8; ] { }
 @ifdef IA64
 # Ghidra Adonis Processor start
 :CALLF addr32       is $(LONGMODE_ON) &vexMode=0 & addrsize=1 & opsize=2 & byte=0xff; addr32 & reg_opcode=3 ... { local dest:4 = addr32; push82(CS); push48(&:4 inst_next); call [dest]; }
-# Ghidra Adonis Processor end
-:CALLF addr64       is $(LONGMODE_ON) &vexMode=0 & addrsize=2 & opsize=1 & byte=0xff; addr64 & reg_opcode=3 ... { local dest:8 = addr64; push82(CS); push84(&:4 inst_next); call [dest]; }
-# Ghidra Adonis Processor start
-:CALLF addr64       is $(LONGMODE_ON) &vexMode=0 & addrsize=2 & opsize=2 & byte=0xff; addr64 & reg_opcode=3 ... { local dest:8 = addr64; push82(CS); push48(&:4 inst_next); call [dest]; }
+:CALLF addr64       is $(LONGMODE_ON) &vexMode=0 & addrsize=2 & opsize=1 & byte=0xff; addr64 & reg_opcode=3 ... { local dest:4 = addr64:4; push82(CS); push84(&:4 inst_next); call [dest]; }
+:CALLF addr64       is $(LONGMODE_ON) &vexMode=0 & addrsize=2 & opsize=2 & byte=0xff; addr64 & reg_opcode=3 ... { local dest:4 = addr64:4; push82(CS); push48(&:4 inst_next); call [dest]; }
 # Ghidra Adonis Processor end
 @endif
 
