@@ -1,8 +1,10 @@
 # SLA specification file for Intel x86
 
 @ifdef IA64
-@define SIZE     "8"
-@define STACKPTR "RSP"
+# Ghidra Adonis Processor start
+@define SIZE     "4"
+@define STACKPTR "ESP"
+# Ghidra Adonis Processor end
 @else
 @define SIZE     "4"
 @define STACKPTR "ESP"
@@ -775,11 +777,13 @@ Mem16: seg16^addr16	is seg16; addr16							 	   { tmp:$(SIZE) = segment(seg16,ad
 Mem: Mem16 is addrsize=0 & Mem16             { export Mem16; }
 
 @ifdef IA64
-Mem: segWide^Addr32_64 is $(LONGMODE_ON) & addrsize=1 & segWide; Addr32_64 			{ export Addr32_64; }
-Mem: segWide^Addr32_64 is $(LONGMODE_ON) & addrsize=1 & segWide & highseg=1; Addr32_64	{ tmp:8 = segWide + Addr32_64; export tmp; }
-Mem: segWide^addr64 is $(LONGMODE_ON) & addrsize=2 & segWide; addr64             { export addr64; }
-Mem: segWide^addr64 is $(LONGMODE_ON) & addrsize=2 & segWide & highseg=1; addr64 { tmp:$(SIZE) = segWide + addr64; export tmp; }
-Mem: segWide^addr32 is $(LONGMODE_OFF) & addrsize=1 & segWide; addr32       		{ tmp:$(SIZE) = zext(addr32); export tmp; }
+# Ghidra Adonis Processor start
+Mem: segWide^Addr32_64 is $(LONGMODE_ON) & addrsize=1 & segWide; Addr32_64 			{ tmp:4 = Addr32_64:4; export tmp; }
+Mem: segWide^Addr32_64 is $(LONGMODE_ON) & addrsize=1 & segWide & highseg=1; Addr32_64	{ tmp:4 = segWide + Addr32_64:4; export tmp; }
+Mem: segWide^addr64 is $(LONGMODE_ON) & addrsize=2 & segWide; addr64             { tmp:4 = addr64:4; export tmp; }
+Mem: segWide^addr64 is $(LONGMODE_ON) & addrsize=2 & segWide & highseg=1; addr64 { tmp:$(SIZE) = segWide + addr64:4; export tmp; }
+Mem: segWide^addr32 is $(LONGMODE_OFF) & addrsize=1 & segWide; addr32       		{ export addr32; }
+# Ghidra Adonis Processor end
 @else
 Mem: segWide^addr32 is $(LONGMODE_OFF) & addrsize=1 & segWide; addr32       		{ export addr32; }
 @endif
@@ -914,14 +918,18 @@ moffs8: seg16^[imm16]   is addrsize=0 & seg16 & imm16                   { tmp:$(
 moffs8: segWide^[imm32]   is addrsize=1 & highseg=1 & segWide & imm32   { tmp:$(SIZE) = segWide + imm32; export *:1 tmp; }
 moffs8: segWide^[imm32]   is addrsize=1 & segWide & imm32               { export *:1 imm32; }
 @ifdef IA64
-moffs8: segWide^[imm64]   is addrsize=2 & highseg=1 & segWide & imm64   { tmp:8 = segWide + imm64; export *:1 tmp; }
+# Ghidra Adonis Processor start
+moffs8: segWide^[imm64]   is addrsize=2 & highseg=1 & segWide & imm64   { tmp:4 = segWide:4 + imm64:4; export *:1 tmp; }
+# Ghidra Adonis Processor end
 moffs8: segWide^[imm64]   is addrsize=2 & segWide & imm64               { export *:1 imm64; }
 @endif
 moffs16: seg16^[imm16]  is addrsize=0 & seg16 & imm16                   { tmp:$(SIZE) = segment(seg16,imm16:2); export *:2 tmp; }
 moffs16: segWide^[imm32]  is addrsize=1 & highseg=1 & segWide & imm32   { tmp:$(SIZE) = segWide + imm32; export *:2 tmp; }
 moffs16: segWide^[imm32]  is addrsize=1 & segWide & imm32               { export *:2 imm32; }
 @ifdef IA64
-moffs16: segWide^[imm64]  is addrsize=2 & highseg=1 & segWide & imm64   { tmp:8 = segWide + imm64; export *:2 tmp; }
+# Ghidra Adonis Processor start
+moffs16: segWide^[imm64]  is addrsize=2 & highseg=1 & segWide & imm64   { tmp:4 = segWide:4 + imm64:4; export *:2 tmp; }
+# Ghidra Adonis Processor end
 moffs16: segWide^[imm64]  is addrsize=2 & segWide & imm64               { export *:2 imm64; }
 @endif
 
@@ -930,12 +938,16 @@ moffs32: segWide^[imm32]  is addrsize=1 & segWide & imm32               { export
 moffs32: segWide^[imm32]  is addrsize=1 & highseg=1 & segWide & imm32   { tmp:$(SIZE) = segWide + imm32; export *:4 tmp; }
 @ifdef IA64
 moffs32: segWide^[imm64]  is addrsize=2 & segWide & imm64               { export *:4 imm64; }
-moffs32: segWide^[imm64]  is addrsize=2 & highseg=1 & segWide & imm64   { tmp:8 = segWide + imm64; export *:4 tmp; }
+# Ghidra Adonis Processor start
+moffs32: segWide^[imm64]  is addrsize=2 & highseg=1 & segWide & imm64   { tmp:4 = segWide:4 + imm64:4; export *:4 tmp; }
+# Ghidra Adonis Processor end
 @endif
 
 @ifdef IA64
 moffs64: segWide^[imm64]  is addrsize=2 & segWide & imm64               { export *:8 imm64; }
-moffs64: segWide^[imm64]  is addrsize=2 & highseg=1 & segWide & imm64   { tmp:8 = segWide + imm64; export *:8 tmp; }
+# Ghidra Adonis Processor start
+moffs64: segWide^[imm64]  is addrsize=2 & highseg=1 & segWide & imm64   { tmp:4 = segWide:4 + imm64:4; export *:8 tmp; }
+# Ghidra Adonis Processor end
 @endif
 # TODO: segment register offset in 64bit might not be right
 
@@ -1132,9 +1144,13 @@ macro pushseg44(x) {
 }
 
 macro push48(x) {
-  mysave:8 = x;
+  # Ghidra Adonis Processor start
+  mysave:4 = x;
+  # Ghidra Adonis Processor end
   $(STACKPTR) = $(STACKPTR) - 8;
-  *:8 $(STACKPTR) = mysave;
+  # Ghidra Adonis Processor start
+  *:4 $(STACKPTR) = mysave;
+  # Ghidra Adonis Processor end
 }
 
 @ifdef IA64
@@ -2003,8 +2019,10 @@ Suffix3D: imm8        is imm8 [ suffix3D=imm8; ] { }
 }
 @ifdef IA64
 :BT Rmr64,Reg64		is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xa3; mod=3 & Rmr64 & Reg64		{ CF = ((Rmr64 >> (Reg64 & 0x3f)) & 1) != 0; }
-:BT Mem,Reg64		is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xa3; Mem & Reg64 ...		{ local ptr = Mem + (Reg64 s>> 3);
-											  CF = ((*:1 ptr >> (Reg64 & 0x7)) & 1) != 0; }
+# Ghidra Adonis Processor start
+:BT Mem,Reg64		is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xa3; Mem & Reg64 ...		{ local ptr = Mem + Reg64:4 s>> 3;
+											  CF = ((*:1 ptr >> (Reg64:4 & 0x7)) & 1) != 0; }
+# Ghidra Adonis Processor end
 @endif
 :BT rm16,imm8       is vexMode=0 & opsize=0 & byte=0xf; byte=0xba; (rm16 & reg_opcode=4 ...); imm8  { CF = ((rm16 >> (imm8 & 0x0f)) & 1) != 0; } 
 :BT rm32,imm8       is vexMode=0 & opsize=1 & byte=0xf; byte=0xba; (rm32 & reg_opcode=4 ...); imm8  { CF = ((rm32 >> (imm8 & 0x1f)) & 1) != 0; }
@@ -2028,7 +2046,9 @@ Suffix3D: imm8        is imm8 [ suffix3D=imm8; ] { }
 }
 @ifdef IA64
 :BTC Rmr64,Reg64   is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xbb; mod=3 & Rmr64 & Reg64		{ local bit=Reg64&0x3f; local val=(Rmr64>>bit)&1; Rmr64=Rmr64^(1<<bit); CF=(val!=0); }
-:BTC Mem,Reg64     is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xbb; Mem & Reg64 ...		{ local ptr = Mem + (Reg64 s>> 3); local bit=Reg64&7; local val = (*:1 ptr >> bit) & 1; *:1 ptr = *:1 ptr ^ (1<<bit); CF = (val != 0); }
+# Ghidra Adonis Processor start
+:BTC Mem,Reg64     is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xbb; Mem & Reg64 ...		{ local ptr = Mem + Reg64:4 s>> 3; local bit=Reg64&7; local val = (*:1 ptr >> bit) & 1; *:1 ptr = *:1 ptr ^ (1<<bit); CF = (val != 0); }
+# Ghidra Adonis Processor end
 @endif
 :BTC rm16,imm8     is vexMode=0 & opsize=0 & byte=0xf; byte=0xba; (rm16 & reg_opcode=7 ...); imm8   { local bit=imm8&0xf; local val=(rm16>>bit)&1; rm16=rm16^(1<<bit); CF=(val!=0); }
 :BTC rm32,imm8     is vexMode=0 & opsize=1 & byte=0xf; byte=0xba; (rm32 & check_rm32_dest ... & reg_opcode=7 ...); imm8   { local bit=imm8&0x1f; local val=(rm32>>bit)&1; CF=(val!=0); rm32=rm32^(1<<bit); build check_rm32_dest; }
@@ -2052,7 +2072,9 @@ Suffix3D: imm8        is imm8 [ suffix3D=imm8; ] { }
 }
 @ifdef IA64
 :BTR Rmr64,Reg64	is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xb3; mod=3 & Rmr64 & Reg64		{ local bit=Reg64&0x3f; local val=(Rmr64>>bit)&1; Rmr64=Rmr64 & ~(1<<bit); CF=(val!=0); }
-:BTR Mem,Reg64	is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xb3; Mem & Reg64 ...		{ local ptr = Mem + (Reg64 s>> 3); local bit = Reg64 & 7; local val = (*:1 ptr >> bit) & 1; *:1 ptr = *:1 ptr & ~(1<<bit); CF = (val!=0); }
+# Ghidra Adonis Processor start
+:BTR Mem,Reg64	is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xb3; Mem & Reg64 ...		{ local ptr = Mem + Reg64:4 s>> 3; local bit = Reg64 & 7; local val = (*:1 ptr >> bit) & 1; *:1 ptr = *:1 ptr & ~(1<<bit); CF = (val!=0); }
+# Ghidra Adonis Processor end
 @endif
 :BTR rm16,imm8     is vexMode=0 & opsize=0 & byte=0xf; byte=0xba; (rm16 & reg_opcode=6 ...); imm8   { local bit=imm8&0xf; local val=(rm16>>bit)&1; rm16=rm16 & ~(1<<bit); CF=(val!=0); }
 :BTR rm32,imm8     is vexMode=0 & opsize=1 & byte=0xf; byte=0xba; (rm32 & reg_opcode=6 ... & check_rm32_dest ...); imm8   { local bit=imm8&0x1f; local val=(rm32>>bit)&1; CF=(val!=0); rm32=rm32 & ~(1<<bit); build check_rm32_dest;  }
@@ -2076,7 +2098,9 @@ Suffix3D: imm8        is imm8 [ suffix3D=imm8; ] { }
 }
 @ifdef IA64
 :BTS Rmr64,Reg64	is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xab; mod=3 & Rmr64 & Reg64		{ local bit=Reg64&0x3f; local val=(Rmr64>>bit)&1; Rmr64=Rmr64 | (1<<bit); CF=(val!=0); }
-:BTS Mem,Reg64	is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xab; Mem & Reg64 ...		{ local ptr = Mem + (Reg64 s>>3); local bit = Reg64 & 7; local val = (*:1 ptr >> bit) & 1; *:1 ptr = *:1 ptr | (1<<bit); CF = (val != 0); }
+# Ghidra Adonis Processor start
+:BTS Mem,Reg64	is $(LONGMODE_ON) & vexMode=0 & opsize=2 & byte=0xf; byte=0xab; Mem & Reg64 ...		{ local ptr = Mem + Reg64:4 s>>3; local bit = Reg64 & 7; local val = (*:1 ptr >> bit) & 1; *:1 ptr = *:1 ptr | (1<<bit); CF = (val != 0); }
+# Ghidra Adonis Processor end
 @endif
 :BTS rm16,imm8     is vexMode=0 & opsize=0 & byte=0xf; byte=0xba; (rm16 & reg_opcode=5 ...); imm8   { local bit=imm8&0xf; local val=(rm16>>bit)&1; rm16=rm16 | (1<<bit); CF=(val!=0); }
 :BTS rm32,imm8     is vexMode=0 & opsize=1 & byte=0xf; byte=0xba; (rm32 & reg_opcode=5 ... & check_rm32_dest ...); imm8   { local bit=imm8&0x1f; local val=(rm32>>bit)&1; CF=(val!=0); rm32=rm32 | (1<<bit); build check_rm32_dest;  }
@@ -2087,41 +2111,53 @@ Suffix3D: imm8        is imm8 [ suffix3D=imm8; ] { }
 :CALL rel16     is $(LONGMODE_OFF) & vexMode=0 & addrsize=0 & opsize=0 & byte=0xe8; rel16     { push22(&:2 inst_next); call rel16; }
 :CALL rel16     is $(LONGMODE_OFF) & vexMode=0 & addrsize=1 & opsize=0 & byte=0xe8; rel16     { push42(&:2 inst_next); call rel16; }
 @ifdef IA64
-:CALL rel16     is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & opsize=0 & byte=0xe8; rel16     { push88(&:8 inst_next); call rel16; }
+# Ghidra Adonis Processor start
+:CALL rel16     is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & opsize=0 & byte=0xe8; rel16     { push48(&:4 inst_next); call rel16; }
+# Ghidra Adonis Processor end
 @endif
 
 #  When is a Call a Jump, when it jumps right after.  Not always the case but...
 :CALL rel16     is $(LONGMODE_OFF) & vexMode=0 & addrsize=0 & opsize=0 & byte=0xe8; simm16=0 & rel16      { push22(&:2 inst_next); goto rel16; }
 :CALL rel16     is $(LONGMODE_OFF) & vexMode=0 & addrsize=1 & opsize=0 & byte=0xe8; simm16=0 & rel16      { push42(&:2 inst_next); goto rel16; }
 @ifdef IA64
-:CALL rel16     is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & opsize=0 & byte=0xe8; simm16=0 & rel16      { push88(&:8 inst_next); goto rel16; }
+# Ghidra Adonis Processor start
+:CALL rel16     is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & opsize=0 & byte=0xe8; simm16=0 & rel16      { push48(&:4 inst_next); goto rel16; }
+# Ghidra Adonis Processor end
 @endif
 
 :CALL rel32     is $(LONGMODE_OFF) & vexMode=0 & addrsize=0 & opsize=1 & byte=0xe8; rel32     { push24(&:4 inst_next); call rel32; }
 :CALL rel32     is $(LONGMODE_OFF) & vexMode=0 & addrsize=1 & opsize=1 & byte=0xe8; rel32     { push44(&:4 inst_next); call rel32; }
 @ifdef IA64
-:CALL rel32     is $(LONGMODE_ON) & vexMode=0 & addrsize=1 & opsize=1 & byte=0xe8; rel32     { push88(&:8 inst_next); call rel32; }
-:CALL rel32     is $(LONGMODE_ON) & vexMode=0 & addrsize=2 & (opsize=1 | opsize=2) & byte=0xe8; rel32     { push88(&:8 inst_next); call rel32; }
+# Ghidra Adonis Processor start
+:CALL rel32     is $(LONGMODE_ON) & vexMode=0 & addrsize=1 & opsize=1 & byte=0xe8; rel32     { push48(&:4 inst_next); call rel32; }
+:CALL rel32     is $(LONGMODE_ON) & vexMode=0 & addrsize=2 & (opsize=1 | opsize=2) & byte=0xe8; rel32     { push48(&:4 inst_next); call rel32; }
+# Ghidra Adonis Processor end
 @endif
 
 #  When is a call a Jump, when it jumps right after.  Not always the case but...
 :CALL rel32     is $(LONGMODE_OFF) & vexMode=0 & addrsize=0 & opsize=1 & byte=0xe8; simm32=0 & rel32      { push24(&:4 inst_next); goto rel32; }
 :CALL rel32     is $(LONGMODE_OFF) & vexMode=0 & addrsize=1 & opsize=1 & byte=0xe8; simm32=0 & rel32      { push44(&:4 inst_next); goto rel32; }
 @ifdef IA64
-:CALL rel32     is $(LONGMODE_ON) & vexMode=0 & addrsize=1 & opsize=1 & byte=0xe8; simm32=0 & rel32     { push88(&:8 inst_next); goto rel32; }
-:CALL rel32     is $(LONGMODE_ON) & vexMode=0 & addrsize=2 & (opsize=1 | opsize=2) & byte=0xe8; simm32=0 & rel32      { push88(&:8 inst_next); goto rel32; }
+# Ghidra Adonis Processor start
+:CALL rel32     is $(LONGMODE_ON) & vexMode=0 & addrsize=1 & opsize=1 & byte=0xe8; simm32=0 & rel32     { push48(&:4 inst_next); goto rel32; }
+:CALL rel32     is $(LONGMODE_ON) & vexMode=0 & addrsize=2 & (opsize=1 | opsize=2) & byte=0xe8; simm32=0 & rel32      { push48(&:4 inst_next); goto rel32; }
+# Ghidra Adonis Processor end
 @endif
 
 :CALL rm16	    is $(LONGMODE_OFF) & vexMode=0 & addrsize=0 & opsize=0 & byte=0xff & currentCS; rm16 & reg_opcode=2 ...	{ local dest:4 = segment(currentCS,rm16); push22(&:2 inst_next); call [dest]; }
 :CALL rm16      is $(LONGMODE_OFF) & vexMode=0 & addrsize=1 & opsize=0 & byte=0xff; rm16 & reg_opcode=2 ...   { local dest:2 = rm16; push42(&:2 inst_next); call [dest]; }
 @ifdef IA64
-:CALL rm16      is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & opsize=0 & byte=0xff; rm16 & reg_opcode=2 ...   { local dest:8 = inst_next + zext(rm16); push88(&:8 inst_next); call [dest]; }
+# Ghidra Adonis Processor start
+:CALL rm16      is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & opsize=0 & byte=0xff; rm16 & reg_opcode=2 ...   { local dest:8 = inst_next + zext(rm16); push48(&:4 inst_next); call [dest]; }
+# Ghidra Adonis Processor end
 @endif
 
 :CALL rm32      is $(LONGMODE_OFF) & vexMode=0 & addrsize=0 & opsize=1 & byte=0xff; rm32 & reg_opcode=2 ...   { local dest:4 = rm32; push24(&:4 inst_next); call [dest]; }
 :CALL rm32      is $(LONGMODE_OFF) & vexMode=0 & addrsize=1 & opsize=1 & byte=0xff; rm32 & reg_opcode=2 ...   { local dest:4 = rm32; push44(&:4 inst_next); call [dest]; }
 @ifdef IA64
-:CALL rm64      is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & (opsize=1 | opsize=2) & byte=0xff; rm64 & reg_opcode=2 ...   { local dest:8 = rm64; push88(&:8 inst_next); call [dest]; }
+# Ghidra Adonis Processor start
+:CALL rm64      is $(LONGMODE_ON) & vexMode=0 & (addrsize=1 | addrsize=2) & (opsize=1 | opsize=2) & byte=0xff; rm64 & reg_opcode=2 ...   { local dest:8 = rm64; push48(&:4 inst_next); call [dest]; }
+# Ghidra Adonis Processor end
 @endif
 
 # direct far calls generate an opcode undefined exception in x86-64
@@ -2140,9 +2176,13 @@ Suffix3D: imm8        is imm8 [ suffix3D=imm8; ] { }
 :CALLF addr16       is vexMode=0 & addrsize=0 & opsize=1 & byte=0xff; addr16 & reg_opcode=3 ... { local dest:2 = addr16; push22(CS); push24(&:4 inst_next); call [dest]; }
 :CALLF addr32       is vexMode=0 & addrsize=1 & opsize=1 & byte=0xff; addr32 & reg_opcode=3 ... { local dest:4 = addr32; push42(CS); push44(&:4 inst_next); call [dest]; }
 @ifdef IA64
-:CALLF addr32       is $(LONGMODE_ON) &vexMode=0 & addrsize=1 & opsize=2 & byte=0xff; addr32 & reg_opcode=3 ... { local dest:4 = addr32; push82(CS); push88(&:8 inst_next); call [dest]; }
+# Ghidra Adonis Processor start
+:CALLF addr32       is $(LONGMODE_ON) &vexMode=0 & addrsize=1 & opsize=2 & byte=0xff; addr32 & reg_opcode=3 ... { local dest:4 = addr32; push82(CS); push48(&:4 inst_next); call [dest]; }
+# Ghidra Adonis Processor end
 :CALLF addr64       is $(LONGMODE_ON) &vexMode=0 & addrsize=2 & opsize=1 & byte=0xff; addr64 & reg_opcode=3 ... { local dest:8 = addr64; push82(CS); push84(&:4 inst_next); call [dest]; }
-:CALLF addr64       is $(LONGMODE_ON) &vexMode=0 & addrsize=2 & opsize=2 & byte=0xff; addr64 & reg_opcode=3 ... { local dest:8 = addr64; push82(CS); push88(&:8 inst_next); call [dest]; }
+# Ghidra Adonis Processor start
+:CALLF addr64       is $(LONGMODE_ON) &vexMode=0 & addrsize=2 & opsize=2 & byte=0xff; addr64 & reg_opcode=3 ... { local dest:8 = addr64; push82(CS); push48(&:4 inst_next); call [dest]; }
+# Ghidra Adonis Processor end
 @endif
 
 :CBW            is vexMode=0 & opsize=0 & byte=0x98                 { AX = sext(AL); }
@@ -2476,8 +2516,10 @@ enterFrames: low5 is low5 { tmp:1 = low5; export tmp; }
         push88(RBP);
         frameTemp:8 = RSP;
 
-        RSPt:$(SIZE) = RSP;
-        RBPt:$(SIZE) = RBP;
+        # Ghidra Adonis Processor start
+        RSPt:$(SIZE) = ESP;
+        RBPt:$(SIZE) = EBP;
+        # Ghidra Adonis Processor end
         ii:1 = enterFrames - 1;
 <loop>
         RBPt = RBPt - 8;
@@ -2499,8 +2541,10 @@ enterFrames: low5 is low5 { tmp:1 = low5; export tmp; }
         push88(RBP);
         frameTemp:8 = RSP;
 
-        RSPt:$(SIZE) = RSP;
-        RBPt:$(SIZE) = RBP;
+        # Ghidra Adonis Processor start
+        RSPt:$(SIZE) = ESP;
+        RBPt:$(SIZE) = EBP;
+        # Ghidra Adonis Processor end
         ii:1 = enterFrames - 1;
 <loop>
         RBPt = RBPt - 4;
@@ -2522,8 +2566,10 @@ enterFrames: low5 is low5 { tmp:1 = low5; export tmp; }
         push88(RBP);
         frameTemp:8 = RSP;
 
-        RSPt:$(SIZE) = RSP;
-        RBPt:$(SIZE) = RBP;
+        # Ghidra Adonis Processor start
+        RSPt:$(SIZE) = ESP;
+        RBPt:$(SIZE) = EBP;
+        # Ghidra Adonis Processor end
         ii:1 = enterFrames - 1;
 <loop>
         RBPt = RBPt - 2;
@@ -2924,7 +2970,9 @@ enterFrames: low5 is low5 { tmp:1 = low5; export tmp; }
 :LEAVE          is vexMode=0 & addrsize=0 & byte=0xc9               { SP = BP; tmp:$(SIZE) = segment(SS,SP); BP = *tmp; SP = SP + 2; }
 :LEAVE          is vexMode=0 & addrsize=1 & byte=0xc9               { ESP = EBP; EBP = *$(STACKPTR); ESP=ESP+4; }
 @ifdef IA64
-:LEAVE          is $(LONGMODE_ON) & vexMode=0 & addrsize=2 & byte=0xc9               { RSP = RBP; RBP = *RSP; RSP=RSP+8; }
+# Ghidra Adonis Processor start
+:LEAVE          is $(LONGMODE_ON) & vexMode=0 & addrsize=2 & byte=0xc9               { RSP = RBP; RBP = *ESP; RSP=RSP+8; }
+# Ghidra Adonis Processor end
 @endif
 
 define pcodeop GlobalDescriptorTableRegister;
@@ -3968,7 +4016,9 @@ define pcodeop xend;
 :XLAT seg16^BX      is vexMode=0 & addrsize=0 & seg16 & byte=0xd7; BX           { tmp:$(SIZE)= 0; ptr2(tmp,BX+zext(AL)); AL = *tmp; }
 :XLAT segWide^EBX     is vexMode=0 & addrsize=1 & segWide & byte=0xd7; EBX          { tmp:$(SIZE)= 0; ptr4(tmp,EBX+zext(AL)); AL = *tmp; }
 @ifdef IA64
-:XLAT segWide^RBX     is $(LONGMODE_ON) & vexMode=0 & addrsize=2 & segWide & byte=0xd7; RBX          { tmp:$(SIZE)= 0; ptr8(tmp,RBX+zext(AL)); AL = *tmp; }
+# Ghidra Adonis Processor start
+:XLAT segWide^RBX     is $(LONGMODE_ON) & vexMode=0 & addrsize=2 & segWide & byte=0xd7; RBX          { tmp:$(SIZE)= 0; ptr8(tmp,EBX+zext(AL)); AL = *tmp; }
+# Ghidra Adonis Processor end
 @endif
 
 :XOR AL,imm8       is vexMode=0 & byte=0x34; AL & imm8                          { logicalflags();    AL =    AL ^  imm8; resultflags(   AL); }

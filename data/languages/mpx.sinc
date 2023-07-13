@@ -58,7 +58,9 @@ bndmk_addr32: [Base]							is mod=2 & r_m=4; index=4 & Base; imm32=0		{ export B
 
 :BNDCL bnd1, Mem      is $(LONGMODE_ON) & vexMode=0 & $(PRE_F3) & byte=0x0F; byte=0x1A; (bnd1 & bnd1_lb) ... & Mem {
 #   if (LEA(mem) < BND.LB) then BNDSTATUS = 01H; AND BOUND EXCEPTION
-   if !(Mem < bnd1_lb) goto <done>;
+   # Ghidra Adonis Processor start
+   if !(zext(Mem) < bnd1_lb) goto <done>;
+   # Ghidra Adonis Processor end
       BNDSTATUS = 0x01;
       br_exception();
  <done>
@@ -74,7 +76,9 @@ bndmk_addr32: [Base]							is mod=2 & r_m=4; index=4 & Base; imm32=0		{ export B
 
 :BNDCU bnd1, Mem      is $(LONGMODE_ON) & vexMode=0 & $(PRE_F2) & byte=0x0F; byte=0x1A; (bnd1 & bnd1_ub) ... & Mem {
 #   if (LEA(mem) > ~(BND.UB)) then BNDSTATUS = 01H; AND BOUND EXCEPTION
-   if !(Mem > ~bnd1_ub) goto <done>;
+   # Ghidra Adonis Processor start
+   if !(zext(Mem) > ~bnd1_ub) goto <done>;
+   # Ghidra Adonis Processor end
       BNDSTATUS = 0x01;
       br_exception();
  <done>
@@ -90,7 +94,9 @@ bndmk_addr32: [Base]							is mod=2 & r_m=4; index=4 & Base; imm32=0		{ export B
 
 :BNDCN bnd1, Mem      is $(LONGMODE_ON) & vexMode=0 & $(PRE_F2) & byte=0x0F; byte=0x1B; (bnd1 & bnd1_ub) ... & Mem {
 #   if (LEA(mem) > BND.UB) then BNDSTATUS = 01H; AND BOUND EXCEPTION
-   if !(Mem > bnd1_ub) goto <done>;
+   # Ghidra Adonis Processor start
+   if !(zext(Mem) > bnd1_ub) goto <done>;
+   # Ghidra Adonis Processor end
       BNDSTATUS = 0x01;
       br_exception();
  <done>
@@ -108,7 +114,9 @@ bndmk_addr32: [Base]							is mod=2 & r_m=4; index=4 & Base; imm32=0		{ export B
 :BNDMK bnd1, Mem      is $(LONGMODE_ON) & vexMode=0 & $(PRE_F3) & byte=0x0F; byte=0x1B; ( bnd1 & bnd1_lb & bnd1_ub ) ... & ( bndmk_addr64 & Mem ) {
 #   BND.LB and BND.UB set from m64
 	bnd1_lb = bndmk_addr64;
-	bnd1_ub = Mem;
+       # Ghidra Adonis Processor start
+	bnd1_ub = zext(Mem);
+       # Ghidra Adonis Processor end
 }
 
 :BNDMOV bnd1, m128      is $(LONGMODE_ON) & vexMode=0 & $(PRE_66) & byte=0x0F; byte=0x1A; bnd1 ... & m128 {
